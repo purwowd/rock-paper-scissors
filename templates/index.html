@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Batu Gunting Kertas</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+      body,
+      html {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .container {
+        width: 100%;
+        max-width: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center mb-4">Batu Gunting Kertas</h1>
+      <div class="d-flex flex-column align-items-center">
+        <select class="form-control mb-2" id="player_choice">
+          <option value="batu">Batu</option>
+          <option value="gunting">Gunting</option>
+          <option value="kertas">Kertas</option>
+        </select>
+        <button id="submit" class="btn btn-primary w-100">Kirim</button>
+        <div id="result" class="mt-3 text-center"></div>
+        <div id="score" class="mt-3 text-center"></div>
+      </div>
+    </div>
+
+    <script>
+      $(document).ready(function () {
+        let player_score = localStorage.getItem("player_score") || 0;
+        let computer_score = localStorage.getItem("computer_score") || 0;
+        updateScoreDisplay();
+
+        $("#submit").click(function () {
+          var playerChoice = $("#player_choice").val();
+          $.post(
+            "/start_game/",
+            { player_choice: playerChoice },
+            function (data) {
+              $("#result").html(data.result);
+              if (data.result.includes("Pemain menang")) {
+                player_score++;
+                localStorage.setItem("player_score", player_score);
+              } else if (data.result.includes("Komputer menang")) {
+                computer_score++;
+                localStorage.setItem("computer_score", computer_score);
+              }
+              updateScoreDisplay();
+            }
+          );
+        });
+
+        function updateScoreDisplay() {
+          $("#score").html(
+            "Skor: Pemain " + player_score + ", Komputer " + computer_score
+          );
+        }
+      });
+    </script>
+  </body>
+</html>
